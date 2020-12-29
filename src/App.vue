@@ -1,17 +1,18 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1>Welcome to Image Site</h1>
+  <ImageView/>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component';
+import ImageView from './components/ImageView.vue';
 
-export default {
-  name: 'App',
+@Options({
   components: {
-    HelloWorld
-  }
-}
+    ImageView,
+  },
+})
+export default class App extends Vue {}
 </script>
 
 <style>
