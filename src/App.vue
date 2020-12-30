@@ -1,19 +1,10 @@
 <template>
-  <h1>Welcome to Image Site</h1>
-  <ImageView/>
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+  </div>
+  <router-view/>
 </template>
-
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import ImageView from './components/ImageView.vue';
-
-@Options({
-  components: {
-    ImageView,
-  },
-})
-export default class App extends Vue {}
-</script>
 
 <style>
 #app {
@@ -22,6 +13,18 @@ export default class App extends Vue {}
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>
