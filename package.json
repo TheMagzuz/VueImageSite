@@ -25,9 +25,10 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0",
-    "typescript": "~3.9.3"
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^7.4.0",
+    "typescript": "~3.9.3",
+    "vls": "^0.6.4"
   },
   "eslintConfig": {
     "root": true,
