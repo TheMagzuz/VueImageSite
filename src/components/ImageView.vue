@@ -1,50 +1,71 @@
 <template>
-  <p>Image View</p>
-  <div id="image-view-container" v-show="!$route.params.id">
-    <router-link
-      v-bind:to="'/images/' + image.id"
-      v-for="(image, index) in images"
-      :key="index"
-    >
-      <img :src="imagesPath + image.thumbnailPath" />
-    </router-link>
+  <div v-show="!$route.params.id">
+    <search @searchChanged="onSearchChanged"></search>
+    <div id="image-view-container">
+      <router-link
+        v-bind:to="'/images/' + image.id"
+        v-for="(image, index) in images"
+        :key="index"
+      >
+        <img
+          :src="imagesPath + image.thumbnailPath"
+          :class="image.getImageType()"
+        />
+      </router-link>
+      <button v-on:click="extendImages(pageSize)">Extend</button>
+    </div>
   </div>
-  <button v-on:click="extendImages(10)">Extend</button>
   <router-view></router-view>
 </template>
 
 <script lang="ts">
-import { Vue } from "vue-class-component";
+import { defineComponent } from "vue";
 import axios from "axios";
 import { Image } from "../Image";
+import Search from "./Search.vue";
 
-export default class ImageView extends Vue {
-  allImages: Image[] = [];
-  images: Image[] = [];
-  imagesPath = process.env.VUE_APP_CDN_IP + "/image/";
+const pageSize = 10;
 
-  fetchImages() {
-    return axios.get(process.env.VUE_APP_DB_IP + "/images").then((response) => {
-      this.allImages = response.data.reverse().map((d: any) => new Image(d));
-      console.log(this.allImages);
-    });
-  }
+export default defineComponent({
+  data() {
+    return {
+      images: [] as Image[],
+      filteredImages: [] as Image[],
+      allImages: [] as Image[],
+      imagesPath: process.env.VUE_APP_CDN_IP + "/image/",
+    };
+  },
+  methods: {
+    fetchImages() {
+      return axios
+        .get(process.env.VUE_APP_DB_IP + "/images")
+        .then((response) => {
+          this.allImages = response.data
+            .reverse()
+            .map((d: any) => new Image(d));
+          this.filteredImages = this.allImages;
+        });
+    },
 
-  extendImages(amount: 10) {
-    console.log(this.images.length);
-    let newLength = this.images.length + amount;
-    console.log(newLength);
-    this.images = this.allImages.slice(0, newLength);
-    console.log(this.images);
-  }
+    extendImages(amount = pageSize) {
+      let newLength = this.filteredImages.length + amount;
+      this.images = this.filteredImages.slice(0, newLength);
+    },
+    onSearchChanged(tags: string) {
+      this.filteredImages = this.allImages.filter((i) => i.matchesTags(tags));
+      this.images = this.filteredImages.slice(0, pageSize);
+    },
+  },
 
   beforeMount() {
     this.fetchImages().then(() => {
-      this.images = this.allImages.slice(0, 10);
-      console.log(this.images);
+      this.images = this.allImages.slice(0, pageSize);
     });
-  }
-}
+  },
+  components: {
+    Search,
+  },
+});
 </script>
 
 <style scoped>
@@ -57,5 +78,13 @@ export default class ImageView extends Vue {
   margin: 10px;
   width: auto;
   height: auto;
+}
+
+.album {
+  border: solid blue;
+}
+
+.video {
+  border: solid red;
 }
 </style>

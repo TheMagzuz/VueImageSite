@@ -27,19 +27,29 @@ export class Image {
     this.isAlbum = isAlbum;
   }
 
-  public getImageType(): ImageType {
+  public getImageType(): string {
     if (this.isAlbum) {
-      return ImageType.ALBUM;
+      return "album";
     }
     if (this.isVideo) {
-      return ImageType.VIDEO;
+      return "video";
     }
-    return ImageType.IMAGE;
+    return "image";
   }
-}
 
-export enum ImageType {
-  IMAGE,
-  VIDEO,
-  ALBUM,
+  public matchesTags(tags: string): boolean {
+    if (!tags) {
+      return true;
+    }
+    let lowerTags = this.tags.map((t) => t.toLowerCase());
+    for (let tag of tags
+      .toLowerCase()
+      .trim()
+      .split(" ")) {
+      if (tag.startsWith("!")) {
+        if (lowerTags.includes(tag)) return false;
+      } else if (!lowerTags.includes(tag)) return false;
+    }
+    return true;
+  }
 }
