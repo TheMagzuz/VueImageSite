@@ -12,8 +12,26 @@
     </template>
     <img :src="imagePath + image.path" v-else /><br />
     Upvotes: {{ image.upvotes }}
-    <button v-on:click="upvoteImage()">Upvote</button>
-    <button v-on:click="downvoteImage()">Downvote</button>
+    <button @click="upvoteImage()">Upvote</button>
+    <button @click="downvoteImage()">Downvote</button>
+    Tags: <button @click="editing = true">Edit</button> <br />
+    <template v-if="!editing">
+      <div class="taglist">
+        <a
+          v-for="(tag, index) in image.tags"
+          :key="index"
+          @click="onTagClick(tag)"
+          href="javascript:void(0)"
+          class="tag"
+          >{{ tag }}</a
+        >
+      </div>
+    </template>
+    <template v-else>
+      <textarea v-model="tagsField" /><br />
+      <button @click="saveTags()">Save</button>
+      <button @click="cancelTags()">Cancel</button>
+    </template>
   </template>
 </template>
 
@@ -28,12 +46,18 @@ export default class ImageView extends Vue {
   albumImages: string[] = [];
   ready = false;
   imagePath = process.env.VUE_APP_CDN_IP + "/image/";
+  emits = ["requestSearch"];
+  editing = false;
+  originalTags!: string[];
+  tagsField = "";
 
   beforeMount() {
     axios
       .get(process.env.VUE_APP_DB_IP + "/images/" + this.$route.params.id)
       .then((result) => {
         this.image = new Image(result.data);
+        this.originalTags = this.image.tags;
+        this.tagsField = this.image.tags.join(" ");
         if (this.image.isAlbum) {
           axios
             .get(process.env.VUE_APP_DB_IP + "/albums/" + this.$route.params.id)
@@ -47,12 +71,30 @@ export default class ImageView extends Vue {
       });
   }
 
+  onTagClick(tag: string) {
+    this.$emit("requestSearch", tag);
+    history.back();
+  }
+
   upvoteImage() {
     this.image.upvotes++;
+    this.image.put();
   }
 
   downvoteImage() {
     this.image.upvotes--;
+    this.image.put();
+  }
+
+  saveTags() {
+    this.image.tags = this.tagsField.split(" ");
+    this.editing = false;
+    this.originalTags = this.image.tags;
+    this.image.put();
+  }
+  cancelTags() {
+    this.image.tags = this.originalTags;
+    this.editing = false;
   }
 }
 </script>
@@ -61,5 +103,33 @@ export default class ImageView extends Vue {
 img {
   max-height: 90vh;
   max-width: 100vw;
+}
+.tag {
+  padding: 5px;
+  margin: auto;
+}
+.taglist {
+  width: 90vw;
+  display: flex;
+  justify-items: center;
+  flex-wrap: wrap;
+}
+
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+a:visited {
+  text-decoration: underline;
+}
+
+textarea {
+  width: 50em;
 }
 </style>

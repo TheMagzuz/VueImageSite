@@ -1,3 +1,8 @@
+import axios from "axios";
+const JSON_HEADERS = {
+  "Content-Type": "application/json",
+};
+
 export class Image {
   public id: string;
   public tags: string[];
@@ -47,9 +52,21 @@ export class Image {
       .trim()
       .split(" ")) {
       if (tag.startsWith("!")) {
-        if (lowerTags.includes(tag)) return false;
+        if (lowerTags.includes(tag.substring(1))) return false;
       } else if (!lowerTags.includes(tag)) return false;
     }
     return true;
+  }
+
+  public post() {
+    axios.post(process.env.VUE_APP_DB_IP + "/images/" + this.id, this, {
+      headers: JSON_HEADERS,
+    });
+  }
+
+  public put() {
+    axios.put(process.env.VUE_APP_DB_IP + "/images/" + this.id, this, {
+      headers: JSON_HEADERS,
+    });
   }
 }

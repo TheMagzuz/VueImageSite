@@ -23,12 +23,25 @@ import { Image } from "../Image";
 
 export default defineComponent({
   name: "search",
+  emits: ["searchChanged"],
   data() {
     return {
       search: "",
       results: [] as SearchResult[],
       searchItems: [] as SearchResult[],
     };
+  },
+  props: {
+    requestedSearch: {
+      type: String,
+      required: false,
+    },
+  },
+  watch: {
+    requestedSearch: function (newVal) {
+      this.search = newVal;
+      this.onChange();
+    },
   },
 
   beforeMount() {
@@ -58,11 +71,12 @@ export default defineComponent({
     filterResults() {
       let lastTag = this.search;
       if (lastTag.includes(" ")) {
-        lastTag = lastTag.substring(lastTag.lastIndexOf(" "));
+        lastTag = lastTag.substring(lastTag.lastIndexOf(" ")).trim();
       }
       if (lastTag.startsWith("!")) {
-        lastTag = lastTag.substring(1, lastTag.length - 1);
+        lastTag = lastTag.substring(1);
       }
+      console.log(lastTag);
       this.results = this.searchItems
         .filter((s) => s.tag.includes(lastTag.toLowerCase().trim()))
         .sort((a, b) => a.count - b.count)
@@ -70,8 +84,16 @@ export default defineComponent({
     },
 
     onResultClick(result: SearchResult) {
+      let lastTag = this.search;
+      if (lastTag.includes(" ")) {
+        lastTag = lastTag.substring(lastTag.lastIndexOf(" "));
+      }
       this.search = this.search.substring(0, this.search.lastIndexOf(" ") + 1);
-      this.search += result.tag;
+      if (lastTag.startsWith("!")) {
+        this.search += "!" + result.tag;
+      } else {
+        this.search += result.tag;
+      }
       this.$emit("searchChanged", this.search);
     },
   },
