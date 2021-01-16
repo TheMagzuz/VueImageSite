@@ -27,43 +27,56 @@ import { defineComponent, Ref } from "vue";
 import axios from "axios";
 import { Image } from "../Image";
 import Search from "./Search.vue";
+import _ from "lodash";
 
-const pageSize = 10;
 const imageSizes = [126, 132, 234, 420, 512, 660];
 
 export default defineComponent({
   data() {
     return {
       images: [] as Image[],
+      currentPage: -1,
+      nextPageImages: [] as Image[],
       filteredImages: [] as Image[],
       allImages: [] as Image[],
       imagesPath: process.env.VUE_APP_CDN_IP + "/image/",
       thumbnailsPath: process.env.VUE_APP_CDN_IP + "/thumbnail/",
       requestedSearch: "",
+      search: "",
     };
   },
   methods: {
-    fetchImages() {
+    fetchNextPage() {
       return axios
-        .get(process.env.VUE_APP_DB_IP + "/images")
+        .get(
+          process.env.VUE_APP_CDN_IP +
+            "/db/page/" +
+            (this.currentPage + 1) +
+            "?search=" +
+            encodeURIComponent(this.search)
+        )
         .then((response) => {
-          this.allImages = response.data
-            .reverse()
-            .map((d: any) => new Image(d));
-          this.filteredImages = this.allImages;
+          this.nextPageImages = response.data.map((d: any) => new Image(d));
         });
     },
 
-    extendImages(amount = pageSize) {
-      let newLength = this.images.length + amount;
-      this.images = this.filteredImages.slice(0, newLength);
-    },
+    extendImages: _.throttle(function (this: any) {
+      console.log("extend");
+      this.currentPage++;
+      this.images = this.images.concat(this.nextPageImages);
+      this.fetchNextPage();
+    }, 1000),
     onSearchChanged(tags: string) {
-      this.filteredImages = this.allImages.filter((i) => i.matchesTags(tags));
-      this.images = this.filteredImages.slice(0, pageSize);
+      this.images = [];
+      this.search = tags;
+      this.currentPage = -1;
+      this.fetchNextPage().then(() => this.extendImages());
     },
 
     onScroll() {
+      if (this.$route.params.id) {
+        return;
+      }
       let atBottom =
         document.documentElement.scrollTop + window.innerHeight >=
         document.documentElement.offsetHeight - 30;
@@ -85,8 +98,8 @@ export default defineComponent({
   },
 
   beforeMount() {
-    this.fetchImages().then(() => {
-      this.images = this.allImages.slice(0, pageSize);
+    this.fetchNextPage().then(() => {
+      this.extendImages();
     });
   },
   mounted() {
