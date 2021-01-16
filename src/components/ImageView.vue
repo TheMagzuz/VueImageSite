@@ -13,7 +13,7 @@
         <img
           :src="imagesPath + image.thumbnailPath"
           :class="image.getImageType()"
-          :srcset="generateSrcSet(imagesPath + image.thumbnailPath)"
+          :srcset="generateSrcSet(thumbnailsPath + image.thumbnailPath)"
         />
       </router-link>
     </div>
@@ -38,6 +38,7 @@ export default defineComponent({
       filteredImages: [] as Image[],
       allImages: [] as Image[],
       imagesPath: process.env.VUE_APP_CDN_IP + "/image/",
+      thumbnailsPath: process.env.VUE_APP_CDN_IP + "/thumbnail/",
       requestedSearch: "",
     };
   },
