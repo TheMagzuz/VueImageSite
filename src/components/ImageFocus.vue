@@ -107,6 +107,7 @@ export default class ImageView extends Vue {
         }
       );
       this.$router.push("/");
+      this.$emit("imageDelete");
     }
   }
 }

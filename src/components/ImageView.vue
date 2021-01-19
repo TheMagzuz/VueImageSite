@@ -18,7 +18,10 @@
       </router-link>
     </div>
   </div>
-  <router-view @requestSearch="requestSearch"></router-view>
+  <router-view
+    @requestSearch="requestSearch"
+    @imageDelete="onSearchChanged(search)"
+  ></router-view>
 </template>
 
 <script lang="ts">
