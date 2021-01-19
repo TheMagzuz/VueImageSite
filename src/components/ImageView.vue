@@ -78,7 +78,7 @@ export default defineComponent({
     },
 
     onScroll() {
-      if (this.$route.params.id) {
+      if (this.$route.name != "Images") {
         return;
       }
       let atBottom =
