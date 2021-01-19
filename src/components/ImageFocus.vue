@@ -30,7 +30,8 @@
     <template v-else>
       <textarea v-model="tagsField" /><br />
       <button @click="saveTags()">Save</button>
-      <button @click="cancelTags()">Cancel</button>
+      <button @click="cancelTags()">Cancel</button><br />
+      <button @click="deleteImage()">Delete Image</button>
     </template>
   </template>
 </template>
@@ -95,6 +96,18 @@ export default class ImageView extends Vue {
   cancelTags() {
     this.image.tags = this.originalTags;
     this.editing = false;
+  }
+
+  async deleteImage() {
+    if (confirm("Are you sure you want to delete this image?")) {
+      await axios.delete(
+        process.env.VUE_APP_DB_IP + "/image/" + this.image.id,
+        {
+          withCredentials: true,
+        }
+      );
+      this.$router.push("/");
+    }
   }
 }
 </script>
