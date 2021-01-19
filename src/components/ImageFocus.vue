@@ -101,7 +101,7 @@ export default class ImageView extends Vue {
   async deleteImage() {
     if (confirm("Are you sure you want to delete this image?")) {
       await axios.delete(
-        process.env.VUE_APP_DB_IP + "/image/" + this.image.id,
+        process.env.VUE_APP_CDN_IP + "/db/image/" + this.image.id,
         {
           withCredentials: true,
         }
