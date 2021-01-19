@@ -5,11 +5,17 @@
       <source :src="imagePath + image.path" />
     </video>
     <template v-else-if="image.isAlbum">
-      <img
-        :src="imagePath + image.id + '/' + imageName"
-        v-for="(imageName, index) in albumImages"
-        :key="index"
-      />
+      <template v-for="(imageName, index) in albumImages" :key="index">
+        <video
+          controls
+          loop
+          v-if="videoExtensions.includes(getExtension(imageName))"
+        >
+          <source :src="imagePath + image.id + '/' + imageName" />
+        </video>
+        <img :src="imagePath + image.id + '/' + imageName" v-else />
+        <br />
+      </template>
     </template>
     <img :src="imagePath + image.path" v-else /><br />
     <div class="footer">
@@ -36,6 +42,7 @@ export default defineComponent({
       nextImages: [] as Image[],
       prefetches: [] as Node[],
       albumImages: [] as string[],
+      videoExtensions: [".mp4", ".mov", ".webm", ".gif"],
     };
   },
   async beforeMount() {
@@ -97,6 +104,9 @@ export default defineComponent({
       link.setAttribute("href", imageUrl);
       link.setAttribute("data-random-prefetch", "true");
       this.prefetches.push(document.head.appendChild(link));
+    },
+    getExtension(path: string): string {
+      return path.substring(path.lastIndexOf("."), path.length);
     },
   },
 });
