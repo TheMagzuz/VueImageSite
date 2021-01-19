@@ -4,11 +4,17 @@
       <source :src="imagePath + image.path" />
     </video>
     <template v-else-if="image.isAlbum">
-      <img
-        :src="imagePath + image.id + '/' + imageName"
-        v-for="(imageName, index) in albumImages"
-        :key="index"
-      />
+      <template v-for="(imageName, index) in albumImages" :key="index">
+        <video
+          controls
+          loop
+          v-if="videoExtensions.includes(getExtension(imageName))"
+        >
+          <source :src="imagePath + image.id + '/' + imageName" />
+        </video>
+        <img :src="imagePath + image.id + '/' + imageName" v-else />
+        <br />
+      </template>
     </template>
     <img :src="imagePath + image.path" v-else /><br />
     Upvotes: {{ image.upvotes }}
@@ -51,6 +57,7 @@ export default class ImageView extends Vue {
   editing = false;
   originalTags!: string[];
   tagsField = "";
+  videoExtensions = [".mp4", ".mov", ".webm", ".gif"];
 
   async beforeMount() {
     const imageResult = await axios.get(
@@ -110,11 +117,16 @@ export default class ImageView extends Vue {
       this.$emit("imageDelete");
     }
   }
+
+  getExtension(path: string): string {
+    return path.substring(path.lastIndexOf("."), path.length);
+  }
 }
 </script>
 
 <style scoped>
-img {
+img,
+video {
   max-height: 90vh;
   max-width: 100vw;
 }
