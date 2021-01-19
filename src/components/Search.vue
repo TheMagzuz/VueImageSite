@@ -44,24 +44,13 @@ export default defineComponent({
     },
   },
 
-  beforeMount() {
-    axios.get(process.env.VUE_APP_DB_IP + "/images").then((result) => {
-      let tags: string[] = (result.data as Image[])
-        .map((i) => i.tags.join(" "))
-        .flatMap((t) => t.toLowerCase().split(" "));
-      let tagCounts: { [key: string]: number } = {};
-      for (let tag of tags) {
-        if (tag in tagCounts) {
-          tagCounts[tag]++;
-        } else {
-          tagCounts[tag] = 1;
-        }
-      }
-      this.searchItems = Object.keys(tagCounts).map(
-        (key) => new SearchResult(key, tagCounts[key])
-      );
-      this.filterResults();
+  async beforeMount() {
+    const result = await axios.get(process.env.VUE_APP_CDN_IP + "/db/tags", {
+      withCredentials: true,
     });
+    this.searchItems = result.data as SearchResult[];
+
+    this.filterResults();
   },
   methods: {
     onChange() {
@@ -99,6 +88,7 @@ export default defineComponent({
   },
 });
 
+// eslint-disable-next-line
 class SearchResult {
   tag: string;
   count: number;
