@@ -1,7 +1,8 @@
 <template>
   <div id="nav" v-if="!$route.meta.hideNav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/upload">Upload</router-link>
+    <router-link to="/images">Home</router-link> |
+    <router-link to="/upload">Upload</router-link> |
+    <router-link to="/random">Random</router-link>
   </div>
 
   <router-view />

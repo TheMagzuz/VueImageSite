@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import ImageView from "../components/ImageView.vue";
 import ImageFocus from "../components/ImageFocus.vue";
 import Login from "../components/Login.vue";
+import Random from "../components/Random.vue";
 import { VueCookieNext } from "vue-cookie-next";
 
 const routes: Array<RouteRecordRaw> = [
@@ -28,6 +29,11 @@ const routes: Array<RouteRecordRaw> = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../components/Upload.vue"),
+  },
+  {
+    path: "/random",
+    name: "Random",
+    component: Random,
   },
   {
     path: "/login",
