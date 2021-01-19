@@ -53,7 +53,8 @@ export default defineComponent({
             "/db/page/" +
             (this.currentPage + 1) +
             "?search=" +
-            encodeURIComponent(this.search)
+            encodeURIComponent(this.search),
+          { withCredentials: true }
         )
         .then((response) => {
           this.nextPageImages = response.data.map((d: any) => new Image(d));
