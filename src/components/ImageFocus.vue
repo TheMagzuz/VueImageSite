@@ -52,24 +52,24 @@ export default class ImageView extends Vue {
   originalTags!: string[];
   tagsField = "";
 
-  beforeMount() {
-    axios
-      .get(process.env.VUE_APP_DB_IP + "/images/" + this.$route.params.id)
-      .then((result) => {
-        this.image = new Image(result.data);
-        this.originalTags = this.image.tags;
-        this.tagsField = this.image.tags.join(" ");
-        if (this.image.isAlbum) {
-          axios
-            .get(process.env.VUE_APP_DB_IP + "/albums/" + this.$route.params.id)
-            .then((result) => {
-              this.albumImages = result.data.images;
-              this.ready = true;
-            });
-        } else {
-          this.ready = true;
-        }
-      });
+  async beforeMount() {
+    const imageResult = await axios.get(
+      process.env.VUE_APP_CDN_IP + "/db/image/" + this.$route.params.id,
+      { withCredentials: true }
+    );
+    this.image = new Image(imageResult.data);
+    this.originalTags = this.image.tags;
+    this.tagsField = this.image.tags.join(" ");
+    if (this.image.isAlbum) {
+      const result = await axios.get(
+        process.env.VUE_APP_CDN_IP + "/db/album/" + this.$route.params.id,
+        { withCredentials: true }
+      );
+      this.albumImages = result.data.images;
+      this.ready = true;
+    } else {
+      this.ready = true;
+    }
   }
 
   onTagClick(tag: string) {
