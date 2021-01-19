@@ -51,12 +51,11 @@ export default defineComponent({
       formData.append("photo", file);
       formData.append("tags", this.tags);
 
-      axios.post(process.env.VUE_APP_DB_IP);
-
       axios
         .post(process.env.VUE_APP_CDN_IP, formData, {
           headers: { "Content-Type": "multipart/form-data" },
           onUploadProgress: this.onUploadProgress,
+          withCredentials: true,
         })
         .then(() => {
           this.uploading = false;
