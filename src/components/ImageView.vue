@@ -46,6 +46,7 @@ export default defineComponent({
       thumbnailsPath: process.env.VUE_APP_CDN_IP + "/thumbnail/",
       requestedSearch: "",
       search: "",
+      hasNextImages: true,
     };
   },
   methods: {
@@ -61,16 +62,23 @@ export default defineComponent({
         )
         .then((response) => {
           this.nextPageImages = response.data.map((d: any) => new Image(d));
+          this.hasNextImages = true;
+        })
+        .catch(() => {
+          this.hasNextImages = false;
         });
     },
 
     extendImages: _.throttle(function (this: any) {
-      console.log("extend");
+      if (!this.hasNextImages) {
+        return;
+      }
       this.currentPage++;
       this.images = this.images.concat(this.nextPageImages);
       this.fetchNextPage();
     }, 1000),
     onSearchChanged(tags: string) {
+      this.hasNextImages = true;
       this.images = [];
       this.search = tags;
       this.currentPage = -1;
@@ -85,7 +93,7 @@ export default defineComponent({
         document.documentElement.scrollTop + window.innerHeight >=
         document.documentElement.offsetHeight - 30;
 
-      if (atBottom) {
+      if (atBottom && this.hasNextImages) {
         this.extendImages();
       }
     },
