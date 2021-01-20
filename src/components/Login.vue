@@ -3,9 +3,19 @@
     <b>Please login to access the site</b><br />
     <div class="login-form">
       <label for="username">Username: </label>
-      <input type="text" name="username" v-model="username" /><br />
+      <input
+        type="text"
+        name="username"
+        v-model="username"
+        @keydown.enter="login"
+      /><br />
       <label for="password">Password: </label>
-      <input type="password" name="password" v-model="password" /><br />
+      <input
+        type="password"
+        name="password"
+        v-model="password"
+        @keydown.enter="login"
+      /><br />
       <button @click="login">Login</button>
     </div>
     <p>
