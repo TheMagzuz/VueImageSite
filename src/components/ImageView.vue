@@ -41,8 +41,7 @@
 </template>
 
 <script lang="ts">
-// eslint-disable-next-line no-unused-vars
-import { defineComponent, Ref } from "vue";
+import { defineComponent } from "vue";
 import axios from "axios";
 import { Image } from "../Image";
 import Search from "./Search.vue";
