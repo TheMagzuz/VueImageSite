@@ -40,7 +40,6 @@ export default defineComponent({
       search: "",
       image: new DBImage(),
       nextImages: [] as DBImage[],
-      prefetches: [] as Node[],
       albumImages: [] as string[],
       videoExtensions: [".mp4", ".mov", ".webm", ".gif"],
     };
@@ -56,10 +55,6 @@ export default defineComponent({
   },
   methods: {
     async getImages() {
-      for (let el of this.prefetches) {
-        el.parentElement?.removeChild(el);
-      }
-      this.prefetches = [];
       this.nextImages = (
         await axios.get(
           process.env.VUE_APP_CDN_IP +
@@ -71,7 +66,21 @@ export default defineComponent({
         )
       ).data as DBImage[];
       for (let i of this.nextImages) {
-        this.createPrefetch(process.env.VUE_APP_CDN_IP + "/image/" + i.path);
+        if (!i.isAlbum) {
+          this.createPrefetch(process.env.VUE_APP_CDN_IP + "/image/" + i.path);
+        } else {
+          const albumRequest = await axios.get(
+            process.env.VUE_APP_CDN_IP + "/db/album/" + i.id,
+            {
+              withCredentials: true,
+            }
+          );
+          for (const albumImage of albumRequest.data.images) {
+            this.createPrefetch(
+              process.env.VUE_APP_CDN_IP + "/image/" + i.id + "/" + albumImage
+            );
+          }
+        }
       }
     },
     async showNextImage() {
