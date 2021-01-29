@@ -27,7 +27,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Search from "./Search.vue";
-import { Image } from "../Image";
+import { Image as DBImage } from "../Image";
 import axios from "axios";
 
 const preloadSize = 5;
@@ -38,8 +38,8 @@ export default defineComponent({
       ready: false,
       imagePath: process.env.VUE_APP_CDN_IP + "/image/",
       search: "",
-      image: new Image(),
-      nextImages: [] as Image[],
+      image: new DBImage(),
+      nextImages: [] as DBImage[],
       prefetches: [] as Node[],
       albumImages: [] as string[],
       videoExtensions: [".mp4", ".mov", ".webm", ".gif"],
@@ -69,7 +69,7 @@ export default defineComponent({
             this.search,
           { withCredentials: true }
         )
-      ).data as Image[];
+      ).data as DBImage[];
       for (let i of this.nextImages) {
         this.createPrefetch(process.env.VUE_APP_CDN_IP + "/image/" + i.path);
       }
@@ -99,11 +99,8 @@ export default defineComponent({
       this.getImages();
     },
     createPrefetch(imageUrl: string) {
-      const link = document.createElement("link");
-      link.setAttribute("rel", "preload");
-      link.setAttribute("href", imageUrl);
-      link.setAttribute("data-random-prefetch", "true");
-      this.prefetches.push(document.head.appendChild(link));
+      let img = new Image();
+      img.src = imageUrl;
     },
     getExtension(path: string): string {
       return path.substring(path.lastIndexOf("."), path.length);
