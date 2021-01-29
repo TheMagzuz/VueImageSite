@@ -26,9 +26,10 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import axios from "axios";
+import _ from "lodash";
 import Search from "./Search.vue";
 import { Image as DBImage } from "../Image";
-import axios from "axios";
 
 const preloadSize = 5;
 export default defineComponent({
@@ -55,6 +56,7 @@ export default defineComponent({
   },
   methods: {
     async getImages() {
+      console.log("getImages");
       this.nextImages = (
         await axios.get(
           process.env.VUE_APP_CDN_IP +
@@ -83,6 +85,9 @@ export default defineComponent({
         }
       }
     },
+    getImagesDebounced: _.debounce(function (this: any) {
+      this.getImages();
+    }, 1000),
     async showNextImage() {
       let img = this.nextImages.pop();
       if (img == undefined) {
@@ -105,7 +110,7 @@ export default defineComponent({
     },
     searchChanged(newSearch: string) {
       this.search = newSearch;
-      this.getImages();
+      this.getImagesDebounced();
     },
     createPrefetch(imageUrl: string) {
       let img = new Image();
