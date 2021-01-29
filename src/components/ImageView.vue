@@ -4,6 +4,22 @@
       @searchChanged="onSearchChanged"
       :requestedSearch="requestedSearch"
     ></search>
+    <label for="searchSort">Sort by: </label>
+    <select
+      name="searchSort"
+      v-model="searchSort"
+      @change="onSearchChanged(search)"
+    >
+      <option value="default">Default</option>
+      <option value="upvotes">Upvotes</option>
+    </select>
+    <label for="searchReverse">Reverse: </label>
+    <input
+      type="checkbox"
+      name="searchReverse"
+      v-model="searchReverse"
+      @change="onSearchChanged(search)"
+    />
     <div id="image-view-container">
       <router-link
         v-bind:to="'/images/' + image.id"
@@ -46,6 +62,8 @@ export default defineComponent({
       thumbnailsPath: process.env.VUE_APP_CDN_IP + "/thumbnail/",
       requestedSearch: "",
       search: "",
+      searchSort: "default",
+      searchReverse: false,
       hasNextImages: true,
     };
   },
@@ -57,7 +75,11 @@ export default defineComponent({
             "/db/page/" +
             (this.currentPage + 1) +
             "?search=" +
-            encodeURIComponent(this.search),
+            encodeURIComponent(this.search) +
+            "&sortBy=" +
+            this.searchSort +
+            "&reverseSort=" +
+            this.searchReverse,
           { withCredentials: true }
         )
         .then((response) => {
