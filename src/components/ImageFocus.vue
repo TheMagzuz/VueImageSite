@@ -85,13 +85,11 @@ export default class ImageView extends Vue {
   }
 
   upvoteImage() {
-    this.image.upvotes++;
-    this.image.put();
+    this.image.upvote();
   }
 
   downvoteImage() {
-    this.image.upvotes--;
-    this.image.put();
+    this.image.downvote();
   }
 
   saveTags() {

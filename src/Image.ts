@@ -69,4 +69,22 @@ export class Image {
       headers: JSON_HEADERS,
     });
   }
+
+  public upvote() {
+    this.upvotes += 1;
+    axios.post(
+      process.env.VUE_APP_CDN_IP + "/db/image/" + this.id + "/upvote",
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  public downvote() {
+    this.upvotes -= 1;
+    axios.post(
+      process.env.VUE_APP_CDN_IP + "/db/image/" + this.id + "/downvote",
+      {},
+      { withCredentials: true }
+    );
+  }
 }
