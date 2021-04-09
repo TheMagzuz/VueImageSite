@@ -59,13 +59,13 @@ export class Image {
   }
 
   public post() {
-    axios.post(process.env.VUE_APP_DB_IP + "/images/" + this.id, this, {
+    axios.post(process.env.VUE_APP_CDN_IP + "/images/" + this.id, this, {
       headers: JSON_HEADERS,
     });
   }
 
   public put() {
-    axios.put(process.env.VUE_APP_DB_IP + "/images/" + this.id, this, {
+    axios.put(process.env.VUE_APP_CDN_IP + "/images/" + this.id, this, {
       headers: JSON_HEADERS,
     });
   }
